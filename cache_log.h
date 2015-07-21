@@ -1,0 +1,22 @@
+#ifndef LOG
+#define LOG
+#define EXEC_CORRECT 0
+#define ERROR_OPENFILE  1
+#define ERROR_CLOSE     2
+#define ERROR_WRITEFILE 3
+#define EXIT_CORRECT 0
+#define ERROR_MALLOC_CACHE 5 
+#define ERROR_INIT_CACHE 6
+#define ERROR_SEND_FILE_FAILED 7
+#define ERROR_CREATE_SOCKET_FAILED 8
+#define ERROR_SERVER_BIND_PORT_FAILED 9
+#define ERROR_SERVER_LISTEN_FAILED 10
+#define ERROR_SERVER_ACCEPT_FAILED 11
+#define ERROR_SERVER_RECIEVE_DATA_FAILED 12
+#define ERROR_INIT_SERVER_DAEMON 13
+#define ERROR_SERVER_CREATE_CHILD_THREAD 14
+int openlog(char *);
+int writelog(int );
+int closelog();
+time_t lcurrent_time();
+#endif
