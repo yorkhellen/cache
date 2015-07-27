@@ -13,6 +13,7 @@ extern "C"
 {
 #include "pvfsapi.h"
 }
+
 using namespace std;
 /*
 #include <sys/types.h>
@@ -20,6 +21,7 @@ using namespace std;
 #include <fcntl.h>
 #include <unistd.h>
 */
+pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
 #define HELLO_WORLD_SERVER_PORT    6666 
 #define LENGTH_OF_LISTEN_QUEUE 20
 #define BUFFER_SIZE 1024
@@ -123,7 +125,8 @@ int main(int argc, char **argv)
            writelog(ERROR_SERVER_CREATE_CHILD_THREAD);
         }
     }
-        close(server_socket);
+    pthread_mutex_destroy(&mutex);
+    close(server_socket);
     closelog();
     return 0;
 }
@@ -139,7 +142,7 @@ void * handle_client(void * data)
     thread_message * message;
     message = (thread_message *) data;
    int new_server_socket=message->net_server_socket;
-   
+   pthread_mutex_lock(&mutex);
    Node * p = IsCached(message->file_name);
    if( nullptr == p)
    {
@@ -150,6 +153,7 @@ void * handle_client(void * data)
    {     
        
    }
+   pthread_mutex_unlock(&mutex);
   close(new_server_socket);
   pthread_exit(NULL);
 }
