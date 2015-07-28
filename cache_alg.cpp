@@ -5,7 +5,7 @@
 #include <stdlib.h>
 #include <wchar.h>
 #include <string.h>
-const unsigned long CACHE_SIZE=1024*1024*1024*5;
+const unsigned long long CACHE_SIZE=1024*1024*1024*5;
 const unsigned int BLOCK_NUMBER= 80;
 const unsigned int BLOCK_SIZE=1024*1024*64;
 #define INITCache(m)  \
@@ -37,6 +37,7 @@ Node * NodeMalloc(bool f, char * filename ,size_t st,size_t en, size_t sz, time_
         tmp->file_count =co;
         tmp->next =NULL;
     }
+    return tmp;
 }
 
 void InitCache()

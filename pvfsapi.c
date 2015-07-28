@@ -4,7 +4,7 @@
 
 static PVFS_hint hints = NULL;
 
-int pvfsread (int argc, char * argv)
+int pvfsread (int server_socket, char * argv)
 {
     struct options* user_opts = NULL;
     double time1=0, time2=0;
@@ -15,7 +15,7 @@ int pvfsread (int argc, char * argv)
     int64_t ret;
     PVFS_credentials credentials;
 
-    user_opts = parse_args(argc, argv);
+    user_opts = parse_args(server_socket, argv);
     if (!user_opts)
 
     {
@@ -63,17 +63,8 @@ int pvfsread (int argc, char * argv)
     {
 	buffer_size = current_size;
 	total_written += current_size;
-        printf("%s",buffer);
+        send(server_socket,buffer,current_size,0);
     }
-
-    time2 = Wtime();
-
-    if (user_opts->show_timings) 
-
-    {
-	print_timings(time2-time1, total_written);
-    }
-    
     ret = 0;
 
 main_out:

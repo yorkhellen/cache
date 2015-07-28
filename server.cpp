@@ -124,11 +124,12 @@ int main(int argc, char **argv)
         {
            writelog(ERROR_SERVER_CREATE_CHILD_THREAD);
         }
+        pthread_join(child_thread,NULL);
     }
-    pthread_mutex_destroy(&mutex);
-    close(server_socket);
-    closelog();
-    return 0;
+     pthread_mutex_destroy(&mutex);
+     close(server_socket);
+     closelog();
+     return 0;
 }
 /*Server child thread for handle child request
  * args thread_message socketnumber for comm to client and the file name of request
@@ -146,8 +147,8 @@ void * handle_client(void * data)
    Node * p = IsCached(message->file_name);
    if( nullptr == p)
    {
-     pvfsread(1,message->file_name);
-     CacheIn(message->file_name ,1);
+     pvfsread(new_server_socket,message->file_name);
+     //CacheIn(message->file_name ,1);
    }
    else
    {     

@@ -17,21 +17,21 @@ help :
 all : $(EXES)  dynamic
 
 $(EXES) : % : %.o
-	$(CC) $(CFLAGS) -o $@ $< -lpvfs2 -lpthread -lcrypto
+	@$(CC) $(CFLAGS) -o $@ $< -lpvfs2 -lpthread -lcrypto
 
 $(OBJS) : %.o : %.c
-	$(CC) $(CFLAGS) -c $<
+	@$(CC) $(CFLAGS) -c $<
 clean : 
-	-rm $(EXES) $(OBJS) 
+	@-rm $(EXES) $(OBJS) 
 dynamic : pvfsapi.c pvfsapi.h
-	$(CC)  $(CFLAGS) -c   pvfsapi.c -lpvfs2 -lpthread -lcrypto
+	@$(CC)  $(CFLAGS) -c   pvfsapi.c -lpvfs2 -lpthread -lcrypto
 pvfs : pvfsapi.c pvfsapi.h
-	$(CC)  $(CFLAGS) -o pvfsapi.o  pvfsapi.c -lpvfs2 -lpthread -lcrypto
+	@$(CC)  $(CFLAGS) -o pvfsapi.o  pvfsapi.c -lpvfs2 -lpthread -lcrypto
 
 test :  test.*  cache_log.*
-	$(CC)  -std=c++0x -Istdc++ $(CFLAGS) -o  test test.cpp pvfsapi.c cache_log.cpp  cache_alg.cpp -g -lpvfs2 -lpthread -lcrypto
+	@$(CC)  -std=c++0x -Istdc++ $(CFLAGS) -o  test test.cpp pvfsapi.c cache_log.cpp  cache_alg.cpp -g -lpvfs2 -lpthread -lcrypto
 testpvfs : test.cpp  pvfsapi.c
-	$(CC)    $(CFLAGS)  -o test test.cpp  pvfsapi.c  -lpvfs2 -lpthread -lcrypto
+	@$(CC)    $(CFLAGS)  -o test test.cpp  pvfsapi.c  -lpvfs2 -lpthread -lcrypto
 server : server.cpp
-	@$(CC)  -std=c++0x -Istdc++ $(CFLAGS) -o server server.cpp  pvfsapi.c cache_log.cpp cache_alg.cpp -lpvfs2 -lpthread -lcrypto
+	@$(CC)  -std=c++0x -Istdc++ $(CFLAGS) -o server server.cpp  pvfsapi.c cache_log.cpp cache_alg.cpp -lpvfs2 -lpthread -lcrypto -g
 	
