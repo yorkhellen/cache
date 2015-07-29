@@ -53,7 +53,7 @@ int writelog(int fag)
                         fprintf(fp,"create socket failed\n");
                         break;
                 case ERROR_SERVER_BIND_PORT_FAILED:
-                        fprintf(fp,"bing port failed\n");
+                        fprintf(fp,"bind port failed\n");
                         break;
                 case ERROR_SERVER_LISTEN_FAILED :
                         fprintf(fp,"Listen failed\n");

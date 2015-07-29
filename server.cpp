@@ -90,6 +90,7 @@ int main(int argc, char **argv)
      * Init Cache
      */
     InitCache();
+    pvfsInit();
     // loop for handle client request
     while (1) 
     {
@@ -112,6 +113,9 @@ int main(int argc, char **argv)
             continue ;
         }
         struct thread_message child_message;
+        //pvfsread(new_server_socket,buffer);
+        //close(new_server_socket);
+        
         child_message.net_server_socket = new_server_socket;
         child_message.file_name=buffer;
        // create thread 
@@ -120,15 +124,19 @@ int main(int argc, char **argv)
         pthread_attr_init (&child_thread_attr);
         pthread_attr_setdetachstate(&child_thread_attr,PTHREAD_CREATE_DETACHED);
 
-        if (pthread_create(&child_thread,&child_thread_attr,handle_client,&(child_message) )<0)
+        if (pthread_create(&child_thread,NULL,handle_client,&(child_message) )<0)
         {
            writelog(ERROR_SERVER_CREATE_CHILD_THREAD);
         }
         pthread_join(child_thread,NULL);
+        //sleep(1);
+        
     }
      pthread_mutex_destroy(&mutex);
      close(server_socket);
      closelog();
+     pvfsDestory();
+     DestoryCache();
      return 0;
 }
 /*Server child thread for handle child request
@@ -143,7 +151,7 @@ void * handle_client(void * data)
     thread_message * message;
     message = (thread_message *) data;
    int new_server_socket=message->net_server_socket;
-   pthread_mutex_lock(&mutex);
+   //pthread_mutex_lock(&mutex);
    Node * p = IsCached(message->file_name);
    if( nullptr == p)
    {
@@ -154,7 +162,7 @@ void * handle_client(void * data)
    {     
        
    }
-   pthread_mutex_unlock(&mutex);
-  close(new_server_socket);
-  pthread_exit(NULL);
+   //pthread_mutex_unlock(&mutex);
+   close(new_server_socket);
+   pthread_exit(NULL);
 }

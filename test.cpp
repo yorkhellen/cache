@@ -19,11 +19,15 @@ int main (int argc, char ** argv)
 	writelog(ERROR_MALLOC_CACHE);
 
 	closelog();
-        */
+               */
+        pvfsInit();
         char * name="/mnt/pvfs2/server.c";
-	pvfsread(1,name);
-        return 0;
+       	pvfsread(1,name);
+        printf("\n\n\n\n\n\n\n\n\n");
+        pvfsread(1,name);
+        pvfsDestory();
+        //return 0;
 
-InitCache();
-DestoryCache();
+//InitCache();
+//DestoryCache();
 }
