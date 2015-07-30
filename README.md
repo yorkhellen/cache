@@ -1,5 +1,5 @@
-### cache
- this cache project is based on pvfs file system  and the cache is an independant mode, might it depand on pvfs api I wrote.
+### Cache
+ This cache project is based on pvfs file system  and the cache is an independant mode, might it depand on pvfs api I wrote.
  and this cache project has the following modules:
  
  prefecting read and delayed write,  pre read with data mining.
