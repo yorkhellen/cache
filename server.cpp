@@ -155,7 +155,12 @@ void * handle_client(void * data)
    Node * p = IsCached(message->file_name);
    if( nullptr == p)
    {
-     pvfsread(new_server_socket,message->file_name);
+    pfile fp;
+    pvfsopen(&fp,message->file_name,"r");
+    char * buffer;
+    buffer = (char*)malloc(sizeof(char)*1024);
+    pvfsread(&fp,buffer,1024,0);
+    send(message->net_server_socket,buffer,1024,0);
      //CacheIn(message->file_name ,1);
    }
    else

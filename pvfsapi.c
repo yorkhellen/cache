@@ -10,55 +10,8 @@
 #include <time.h>
 #include <libgen.h>
 #include <getopt.h>
-
-#include "pvfs2.h"
-#include "pvfs2-hint.h"
-
+#include "pvfsapi.h"
 /* optional parameters, filled in by parse_args() */
-
-struct options
-{
-    PVFS_size strip_size;
-    int num_datafiles;
-    int buf_size;
-    char* srcfile;
-    char* destfile;
-    int show_timings;
-};
-
-enum object_type { 
-    UNIX_FILE = 1,
-    PVFS2_FILE 
-};
-
-enum open_type {
-    OPEN_SRC,
-    OPEN_DEST
-};
-
-typedef struct pvfs2_file_object_s {
-    PVFS_fs_id fs_id;
-    PVFS_object_ref ref;
-    char pvfs2_path[PVFS_NAME_MAX];	
-    char user_path[PVFS_NAME_MAX];
-    PVFS_sys_attr attr;
-    PVFS_permissions perms;
-} pvfs2_file_object;
-
-typedef struct unix_file_object_s {
-    int fd;
-    int mode;
-    char path[NAME_MAX];
-} unix_file_object;
-
-typedef struct file_object_s {
-    int fs_type;
-    union {
-	unix_file_object ufs;
-	pvfs2_file_object pvfs2;
-    } u;
-} file_object;
-
 struct options* parse_args(int argc, char* argv);
 void usage(int argc, char** argv);
 double Wtime(void);
@@ -77,7 +30,6 @@ void make_attribs(PVFS_sys_attr *attr,
                          int nr_datafiles, int mode);
 
 int convert_pvfs2_perms_to_mode(PVFS_permissions perms);
-int pvfsread (int argc, char * argv); 
 
 
  static PVFS_hint hints = NULL;
@@ -95,63 +47,56 @@ int pvfsInit()
  }
  PVFS_util_gen_credentials(&credentials);
 }
+
+int pvfsopen( pfile * pf,char * file_name , char *mode)
+{
+  int ret = 0 ;
+
+  //file_object src;
+  memset(pf, 0 , sizeof(struct file_object_s));
+  resolve_filename(pf, file_name);
+  if ('r' == *mode)
+  {
+    ret=generic_open(pf, &credentials,0,0,NULL,OPEN_SRC);
+  }
+  if('w' == *mode)
+  {
+    ret=generic_open(pf, &credentials,0,0,NULL,OPEN_DEST);
+  }
+     if( ret < 0)
+     {
+       fprintf(stderr, "Could not open");
+       return (-1);
+     }
+}
+int pvfwrite(pfile * fp, char * buffer, int buffer_size,int current_offset)
+{
+ if(fp)
+ {
+     int write_size = 0 ;
+     write_size = generic_write(fp,buffer,current_offset,buffer_size,&credentials);
+     return write_size ;
+ }
+}
+int pvfsread(pfile * fp,char * buffer,int buffer_size, int current_offset)
+{
+ if(fp)
+ {
+   int read_size= 0 ;
+       read_size = generic_read(fp,buffer,current_offset,buffer_size,&credentials);
+    return read_size;
+ }
+ return -1;
+}
+int pvfsclose(pfile* fp)
+{
+    return 0; 
+}
+
 int pvfsDestory()
 {
   PVFS_sys_finalize();
   PVFS_hint_free(hints);
-}
-int pvfsread (int server_socket, char * argv)
-{
-    struct options* user_opts = NULL;
-    int current_size=0;
-    int64_t total_written=0, buffer_size=0;
-    file_object src;
-    void* buffer = NULL;
-    int64_t ret;
-
-    user_opts = parse_args(server_socket, argv);
-    if (!user_opts)
-    {
-	fprintf(stderr, "Error, failed to parse command line arguments\n");
-	return(-1);
-    }
-
-    memset(&src, 0, sizeof(src));
-
-    resolve_filename(&src,  user_opts->srcfile );
-
-    ret = generic_open(&src, &credentials, 0, 0, NULL, OPEN_SRC);
-    if (ret < 0)
-    {
-	fprintf(stderr, "Could not open %s\n", user_opts->srcfile);
-	goto main_out;
-
-    }
-    /* start moving data */
-    buffer = malloc(user_opts->buf_size);
-    if(!buffer)
-    {
-	perror("malloc");
-	ret = -1;
-	goto main_out;
-
-    }
-
-    while((current_size = generic_read(&src, buffer, 
-		    total_written, user_opts->buf_size, &credentials)) > 0)
-    {
-	buffer_size = current_size;
-	total_written += current_size;
- //       printf("%s",buffer);
-        send(server_socket,buffer,current_size,0);
-    }
-    ret = 0;
-
-main_out:
-//    generic_cleanup(&src, &dest, &credentials);
-    free(user_opts);
-    free(buffer);
-    return(ret);
 }
 
 /* parse_args()

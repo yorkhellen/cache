@@ -5,9 +5,9 @@
 #include <stdlib.h>
 #include <wchar.h>
 #include <string.h>
-const unsigned long long CACHE_SIZE=1024*1024*1024*5;
-const unsigned int BLOCK_NUMBER= 80;
-const unsigned int BLOCK_SIZE=1024*1024*64;
+const unsigned long long CACHE_SIZE=1024*1024*1024;
+const unsigned int BLOCK_NUMBER= 256;
+const unsigned int BLOCK_SIZE=1024*1024*4;
 #define INITCache(m)  \
 	do \
  {  \
@@ -49,7 +49,7 @@ void InitCache()
           exit(1);
 	}
         char * s="cache";
-        List =  NodeMalloc(false,s,0,79,CACHE_SIZE,0,0,0);
+        List =  NodeMalloc(false,s,0,BLOCK_NUMBER,CACHE_SIZE,0,0,0);
         if( List == NULL)
         {
             writelog(ERROR_INIT_CACHE);
