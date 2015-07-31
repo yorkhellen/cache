@@ -20,7 +20,7 @@ int main (int argc, char ** argv)
 	writelog(ERROR_MALLOC_CACHE);
 
 	closelog();
-               */
+               
         pvfsInit();
         pfile fp;
 
@@ -35,8 +35,19 @@ int main (int argc, char ** argv)
         printf("\n\n\n\n\n\n\n\n\n");
         //pvfsread(1,name);
         pvfsDestory();
+        */
         //return 0;
 
-//InitCache();
-//DestoryCache();
+InitCache();
+ char * name = "/mnt/pvfs2/server.c";
+ Node * p  = IsCached(name);
+ if(NULL == p )
+ {
+
+     Node *q = CacheIn(name,6000);
+     char * buffer  = (char *) malloc( sizeof(char )*6000);
+     CacheWrite(q->block_start*1024*1024*4,buffer,6000);
+}
+
+DestoryCache();
 }

@@ -37,4 +37,6 @@ Node * IsCached(char *);
 Node * CacheIn(char * ,long);
 void   RearrangeCache();
 Node * Cache_LRU(char * ,int);
+int   CacheRead(char * ,int size);
+int   CacheWrite(int , char * , int size);
 #endif

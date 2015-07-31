@@ -85,10 +85,10 @@ Node * IsCached(char  * s)
 
 Node * CacheIn(char * s,long size)
 { // search for enough space for cache file
-   int BlockNeed = (int)(size / BLOCK_SIZE);
+   int BlockNeed = (int)(size / BLOCK_SIZE)+1;
    Node * p = List;
 
-   while( p->next != List )
+   while(p ->next == List)
    {
      if( false == p->flag ) 
      {
@@ -106,12 +106,13 @@ Node * CacheIn(char * s,long size)
    }
    //every file count ++ for this file access
      Node *q = List;
-     while(q->next != List)
+     while(q)
      {
          if( true == q->flag )
          { 
             q->file_count++;
          }
+         if(q->next == List) break;
          q=q->next;
      }
     
@@ -166,3 +167,15 @@ void RearrangeCache()
       p = p->next;
   }
 }
+int CacheRead(char * buffer, int size)
+{
+    memcpy(buffer,cache,size);
+    return size;
+}
+
+int CacheWrite(int offset,char *buffer, int size)
+{
+    memcpy(cache+offset,buffer,size);
+    return size;
+}
+

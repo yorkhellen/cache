@@ -124,11 +124,11 @@ int main(int argc, char **argv)
         pthread_attr_init (&child_thread_attr);
         pthread_attr_setdetachstate(&child_thread_attr,PTHREAD_CREATE_DETACHED);
 
-        if (pthread_create(&child_thread,NULL,handle_client,&(child_message) )<0)
+        if (pthread_create(&child_thread,&child_thread_attr,handle_client,&(child_message) )<0)
         {
            writelog(ERROR_SERVER_CREATE_CHILD_THREAD);
         }
-        pthread_join(child_thread,NULL);
+       // pthread_join(child_thread,NULL);
         //sleep(1);
         
     }
@@ -150,24 +150,46 @@ void * handle_client(void * data)
 {
     thread_message * message;
     message = (thread_message *) data;
-   int new_server_socket=message->net_server_socket;
-   //pthread_mutex_lock(&mutex);
-   Node * p = IsCached(message->file_name);
-   if( nullptr == p)
-   {
-    pfile fp;
-    pvfsopen(&fp,message->file_name,"r");
-    char * buffer;
-    buffer = (char*)malloc(sizeof(char)*1024);
-    pvfsread(&fp,buffer,1024,0);
-    send(message->net_server_socket,buffer,1024,0);
-     //CacheIn(message->file_name ,1);
-   }
-   else
-   {     
-       
-   }
-   //pthread_mutex_unlock(&mutex);
-   close(new_server_socket);
-   pthread_exit(NULL);
+    pthread_mutex_lock(&mutex);
+
+    Node * p = IsCached(message->file_name);
+
+    if( nullptr == p)
+    {
+     pfile fp;
+     pvfsopen(&fp,message->file_name,"r");
+     char * buffer;
+     int total_size = 0 ;
+     buffer = (char*)malloc(sizeof(char)*1024);
+     while( pvfsread(&fp,buffer,1024,total_size) > 0 )
+     {
+         total_size+=1024;
+         send(message->net_server_socket,buffer,1024,0);
+     }
+
+
+     Node * q = CacheIn(message->file_name ,total_size);
+    
+     total_size = 0 ;
+     int current_read_size = 0 ;
+      const unsigned int BLOCK_SIZE=1024*1024*4;
+     while(pvfsread(&fp,buffer,1024,total_size) >0 )
+     {
+         CacheWrite( p->block_start*BLOCK_SIZE+total_size,buffer,1024);
+         total_size+= 1024;
+     }
+     
+     free (buffer);
+    }
+    else
+    {     
+     char * buffer;
+     buffer = (char *) malloc(sizeof(char )*p->file_size);
+     CacheRead(buffer,p->file_size);
+     send(message->net_server_socket,buffer,p->file_size,0);
+     free(buffer);
+    }
+    pthread_mutex_unlock(&mutex);
+    close(message->net_server_socket);
+    pthread_exit(NULL);
 }

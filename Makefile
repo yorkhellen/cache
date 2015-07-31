@@ -9,10 +9,7 @@ OBJS = read.o write.o
 .PHONY : all  clean dynamic test  testpvfs pvfs help server
 help :
 	@echo "      make all :create pvfs read and write and pvfsapi.so "
-	@echo "      make exes:create pvfs read and write"
-	@echo "      make dynamic :create pvfsapi.so"
 	@echo "      make test : for test the log function open close write log "
-	@echo "      make testpvfs : for test the pvfs read write function"
 	@echo "      make server : for cache daemon process"
 all : $(EXES)  dynamic
 
