@@ -160,23 +160,24 @@ void * handle_client(void * data)
      pvfsopen(&fp,message->file_name,"r");
      char * buffer;
      int total_size = 0 ;
-     buffer = (char*)malloc(sizeof(char)*1024);
-     while( pvfsread(&fp,buffer,1024,total_size) > 0 )
+     int current_read_size = 0 ;
+     buffer = (char*)malloc(sizeof(char)*BLOCK_SIZE);
+     while(( current_read_size =pvfsread(&fp,buffer,BLOCK_SIZE,total_size)) > 0 )
      {
-         total_size+=1024;
-         send(message->net_server_socket,buffer,1024,0);
+         total_size+=current_read_size;
+         send(message->net_server_socket,buffer,BLOCK_SIZE,0);
      }
 
 
      Node * q = CacheIn(message->file_name ,total_size);
     
      total_size = 0 ;
-     int current_read_size = 0 ;
-      const unsigned int BLOCK_SIZE=1024*1024*4;
-     while(pvfsread(&fp,buffer,1024,total_size) >0 )
+     current_read_size = 0 ;
+     while((current_read_size =pvfsread(&fp,buffer,BLOCK_SIZE,total_size)  )>0)
      {
-         CacheWrite( p->block_start*BLOCK_SIZE+total_size,buffer,1024);
-         total_size+= 1024;
+         
+         CacheWrite(q->block_start,total_size,buffer,current_read_size);
+         total_size+=current_read_size;
      }
      
      free (buffer);
@@ -184,9 +185,12 @@ void * handle_client(void * data)
     else
     {     
      char * buffer;
-     buffer = (char *) malloc(sizeof(char )*p->file_size);
-     CacheRead(buffer,p->file_size);
-     send(message->net_server_socket,buffer,p->file_size,0);
+     buffer = (char *) malloc(sizeof(char )*BLOCK_SIZE);
+     for(int i = p->block_start ;  i<=p->block_end ; i++)
+     {
+        CacheRead(buffer,i);
+        send(message->net_server_socket,buffer,BLOCK_SIZE,0);
+     }
      free(buffer);
     }
     pthread_mutex_unlock(&mutex);

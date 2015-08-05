@@ -5,9 +5,8 @@
 #include <stdlib.h>
 #include <wchar.h>
 #include <string.h>
-const unsigned long long CACHE_SIZE=1024*1024*1024;
-const unsigned int BLOCK_NUMBER= 256;
-const unsigned int BLOCK_SIZE=1024*1024*4;
+#include <vector>
+using namespace std;
 #define INITCache(m)  \
 	do \
  {  \
@@ -22,6 +21,7 @@ const unsigned int BLOCK_SIZE=1024*1024*4;
 
 char * cache(NULL);
 Node * List(NULL);
+FILE *ft ; 
 Node * NodeMalloc(bool f, char * filename ,size_t st,size_t en, size_t sz, time_t at,time_t ct , int co)
 {
     Node * tmp = (Node *)malloc(sizeof(struct Node) *1);
@@ -167,15 +167,53 @@ void RearrangeCache()
       p = p->next;
   }
 }
-int CacheRead(char * buffer, int size)
+int CacheRead(char * buffer, int block_id)
 {
-    memcpy(buffer,cache,size);
+    memcpy(buffer,cache+BLOCK_SIZE*block_id,BLOCK_SIZE);
+    return BLOCK_SIZE;
+}
+
+int CacheWrite(int block, int offset, char *buffer, int size)
+{
+
+    memcpy(cache+block*BLOCK_SIZE+offset,buffer,size);
     return size;
 }
 
-int CacheWrite(int offset,char *buffer, int size)
+recode * recodeMalloc(char * filename, double time, size_t block_id)
 {
-    memcpy(cache+offset,buffer,size);
-    return size;
-}
+    recode * tmp =(recode *) malloc(sizeof(recode)*1);
+    if( tmp)
+    {
+        tmp->filename == filename;
+        tmp->time = time;
+        tmp->block_id = block_id;
 
+    }
+    return tmp;
+}
+int opendmdata(const char * filename)
+{
+     ft=fopen(filename,"a");
+}
+int closedmdata()
+{
+    fclose(ft);
+}
+int writerecode(const char * filename ,const double time, const size_t block_id)
+{
+    fprintf(ft,"%s %0.0lf %d\n", filename,time,block_id);
+}
+int readrecode(const char * filename)
+{
+    fclose(ft);
+    ft = fopen(filename,"r");
+    char * file_name; 
+    double time;
+    size_t block_id;
+    while(fscanf(ft,"%s %0.01f %d\n",file_name,&time,&block_id))
+    {
+      recode * item = recodeMalloc(file_name,time,block_id);
+
+    }
+}

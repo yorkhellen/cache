@@ -38,7 +38,7 @@ int main (int argc, char ** argv)
         */
         //return 0;
 
-InitCache();
+/*InitCache();
  char * name = "/mnt/pvfs2/server.c";
  Node * p  = IsCached(name);
  if(NULL == p )
@@ -48,6 +48,12 @@ InitCache();
      char * buffer  = (char *) malloc( sizeof(char )*6000);
      CacheWrite(q->block_start*1024*1024*4,buffer,6000);
 }
+*/
 
-DestoryCache();
+ //DestoryCache();
+
+   opendmdata("/home/york/cacheback/dm.data");
+   writerecode("/mnt/pvfs2/server.c", lcurrent_time(),2);
+   closedmdata();
+
 }
