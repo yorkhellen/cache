@@ -19,10 +19,16 @@ struct Node
         
 };
 struct recode{
-    char *filename;
-    double time;
-    size_t block_id;
+    char filename[50];
+    time_t time;
+    int  block_id;
 };
+struct object{
+    char filename[50];
+    int block_id;
+};
+typedef time_t recode_time;
+
 const unsigned long long CACHE_SIZE=1024*1024*1024;
 const unsigned int BLOCK_SIZE=1024*1024*4;
 const unsigned int BLOCK_NUMBER= CACHE_SIZE/BLOCK_SIZE;
@@ -52,4 +58,6 @@ void   RearrangeCache();
 Node * Cache_LRU(char * ,int);
 int   CacheRead(char * ,int); 
 int   CacheWrite(int ,int , char * , int size);
+int   readrecode(const char *);
+int   printrecode();
 #endif

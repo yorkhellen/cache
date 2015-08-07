@@ -53,7 +53,8 @@ int main (int argc, char ** argv)
  //DestoryCache();
 
    opendmdata("/home/york/cacheback/dm.data");
-   writerecode("/mnt/pvfs2/server.c", lcurrent_time(),2);
+   readrecode("/home/york/cacheback/dm.data");
+   printrecode();
    closedmdata();
 
 }

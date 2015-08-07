@@ -26,7 +26,7 @@ pvfs : pvfsapi.c pvfsapi.h
 	@$(CC)  $(CFLAGS) -o pvfsapi.o  pvfsapi.c -lpvfs2 -lpthread -lcrypto
 
 test :  test.*  cache_log.*
-	@$(CC)  -std=c++0x -Istdc++ $(CFLAGS) -o  test test.cpp pvfsapi.c cache_log.cpp  cache_alg.cpp -g -lpvfs2 -lpthread -lcrypto
+	@$(CC)  -std=c++0x -Istdc++ $(CFLAGS) -o  test test.cpp pvfsapi.c cache_log.cpp  cache_alg.cpp -g -lpvfs2 -lpthread -lcrypto -lstdc++
 testpvfs : test.cpp  pvfsapi.c
 	@$(CC)    $(CFLAGS)  -o test test.cpp  pvfsapi.c  -lpvfs2 -lpthread -lcrypto
 server : server.cpp
