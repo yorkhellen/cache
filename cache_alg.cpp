@@ -19,7 +19,7 @@ using namespace std;
 { \
 	free(m); \
 } while(0);
-
+const long threadhold = 0.5;
 char * cache(NULL);
 Node * List(NULL);
 FILE *ft ;
@@ -237,12 +237,44 @@ printrecode()
     }
 }
 struct cmpobject{
-    bool operator()(const struct object & ob1; const struct object %ob2 )const
+    bool operator()(const struct object & ob1, const struct object & ob2 )const
     {
-      return (strcmp(ob1.filename,ob2.filename) == 0  && ob1.block_id == ob2.block_id )
+      return (strcmp(ob1.filename,ob2.filename) == 0  && ob1.block_id == ob2.block_id );
     }
 
 };
+
+void 
+calculate(const int * matrix,const int object_num, const int recode_num ,
+  const int index_key_object ,int * confidence ,int * improve,long *confidence_degree , long * improve_degree  )
+{
+  for(int i = 0 ; i <recode_num ; i++)
+  {
+    if(1 == *(matrix +i*object_num+ index_key_object))
+    { 
+       for(int j = 0 ; j < object_num ; j++)
+       *(confidence+j) += *(matrix+i*object_num+j);
+    }
+    else
+    {
+        for(int j = 0 ; j<object_num ; j ++)
+            *(improve+j)+= *(matrix+i*object_num+j);
+    }
+  }
+  for(int j = 0 ; j <object_num ; j ++)
+  {
+      *(improve+j)+=*(confidence+j);
+  }
+
+      if(recode_num > 0 || *(confidence+index_key_object))
+        for(int i = 0 ; i <object_num ; i ++)
+        {
+         *(confidence_degree+i) = *(confidence+i) / *(confidence+index_key_object);
+         *(improve_degree +i ) = *(improve_degree + i) / recode_num ; 
+        }
+
+}
+
 vector<struct object>&
 aprior_alg(const vector<struct recode> & user_recode, const object & key_object)
 {
@@ -270,7 +302,7 @@ aprior_alg(const vector<struct recode> & user_recode, const object & key_object)
   for(map<object,int,cmpobject>::iterator it=object_set.begin(); it!=object_set.end(); it++)
   {
       it->second == itmp;
-      itmp++:
+      itmp++;
   }
 // create matrix 
   int * recode_matrix = (int *) malloc(sizeof(int)*recode_num*object_num);
@@ -282,7 +314,7 @@ aprior_alg(const vector<struct recode> & user_recode, const object & key_object)
       tmp.block_id = it.block_id;
       int x = recode_set[it.time];
       int y = object_set[tmp];
-      *(it+x*object_num + y) = 1;
+      *(recode_matrix+x*object_num + y) = 1;
   }
   //calculate the degree of confidence
   int * confidence = (int *) malloc(sizeof(int)*object_num);
@@ -295,44 +327,23 @@ aprior_alg(const vector<struct recode> & user_recode, const object & key_object)
   // caluate the confidence and the improve
   long *confidence_degree = (long *)malloc(sizeof(long)*object_num);
   long *improve_degree=(long *)malloc(sizeof(long)*object_num);
-  memset(confidence_degree,0,object_num*sizeof(long);
-  memset(improve_degree=(long *) malloc(sizeof(long)*object_num);
-  calculate(recode_matrix,object_num,recode_num,index_key_object,confidence,improve,condifence_degree, improve_degree);
+  memset(confidence_degree,0,object_num*sizeof(long));
+  memset(improve_degree,0,sizeof(long)*object_num);
+  calculate(recode_matrix,object_num,recode_num,index_key_object,confidence,improve,confidence_degree, improve_degree);
   
-      // 
+  // sort 
+  vector<struct object > result ; 
+  
+  for(map<object,int,cmpobject>::iterator it=object_set.begin(); it!=object_set.end(); it++)
+  {
+     if(*(confidence_degree+it->second) > threadhold && ( *(confidence_degree+ it->second)/ (*(improve_degree+ it->second))))
+         result.push_back(it->first);
+  }
   free(recode_matrix);
   free(confidence);
   free(confidence_degree);
   free(improve_degree);
   free(improve);
+  return result ;
 }
-void 
-calculate(const int * matrix,const int object_num, const int recode_num ,
-  const int index_key_object ,int * confidence ,int * improve,long *confidence_degree , long * improve_degree  )
-{
-  for(int i = 0 ; i <recode_num ; i++)
-  {
-    if(1 == *(it +i*ojbect_num+ index_key_object))
-    { 
-       for(int j = 0 ; j < object_num ; j++)
-       *(confidence+j) += *(recode_matrix+i*object_num+j);
-    }
-    else
-    {
-        for(int j = 0 ; j<object_num ; j ++)
-            *(improve+j)+= *(recode_matrix+i*object_num+j);
-    }
-  }
-  for(int j = 0 ; j <object_num ; j ++)
-  {
-      *(improve+j)+=*(confidence+j);
-  }
 
-      if(recode_num > 0 || *(confidence+index_key_object))
-        for(int i = 0 ; i <object_num ; i ++)
-        {
-         *(confidence_degree+i) = *(confidence+i) / *(confidence+index_key_object);
-         *(improve_degree +i ) = *(improve_degree + i) / recode_num ; 
-        }
-
-}
