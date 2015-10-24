@@ -4,6 +4,7 @@
 #include <malloc.h>
 #include <stdlib.h>
 #include <wchar.h>
+#include <iostream>
 #include <string.h>
 #include <vector>
 #include <map>
@@ -239,7 +240,10 @@ printrecode()
 struct cmpobject{
     bool operator()(const struct object & ob1, const struct object & ob2 )const
     {
-      return (strcmp(ob1.filename,ob2.filename) == 0  && ob1.block_id == ob2.block_id );
+      if (strcmp(ob1.filename,ob2.filename) == 0  && ob1.block_id == ob2.block_id )
+          return true;
+      else
+          return false;
     }
 
 };
@@ -298,6 +302,10 @@ aprior_alg(const vector<struct recode> & user_recode, const object & key_object)
       it->second =itmp;
       itmp++;
   }
+  for (map<recode_time,int>::iterator it = recode_set.begin() ; it != recode_set.end(); it++)
+  { 
+      cout <<it->first << "   "<<it->second<<endl;
+  }
   itmp=0;
   for(map<object,int,cmpobject>::iterator it=object_set.begin(); it!=object_set.end(); it++)
   {
@@ -346,4 +354,7 @@ aprior_alg(const vector<struct recode> & user_recode, const object & key_object)
   free(improve);
   return result ;
 }
-
+vector <struct object> & aprior(const object & key_object)
+{
+    return aprior_alg(user_recode , key_object);
+}

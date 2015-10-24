@@ -1,8 +1,10 @@
 #include <stdio.h>
 #include <time.h>
+#include <stdlib.h>
 #include <malloc.h>
 #include "cache_log.h"
 #include "cache_alg.h"
+#include <string.h>
 extern "C"
 {
 #include "pvfsapi.h"
@@ -54,6 +56,11 @@ int main (int argc, char ** argv)
 
    opendmdata("/home/york/cacheback/dm.data");
    readrecode("/home/york/cacheback/dm.data");
+   struct object tmp ; 
+   char file[50]="/mnt/pvfs2/server.c";
+   strcpy(tmp.filename,file);
+   tmp.block_id =3 ;
+   vector<struct object> vector = aprior(tmp);
    printrecode();
    closedmdata();
 

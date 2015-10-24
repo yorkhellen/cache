@@ -2,6 +2,8 @@
 #define CACHE_ALG
 #include <stddef.h>
 #include <time.h>
+#include <vector>
+using namespace std;
 struct Node
 {
         bool flag;  // for free space
@@ -60,4 +62,5 @@ int   CacheRead(char * ,int);
 int   CacheWrite(int ,int , char * , int size);
 int   readrecode(const char *);
 int   printrecode();
+vector<struct object> & aprior(const object &);
 #endif
