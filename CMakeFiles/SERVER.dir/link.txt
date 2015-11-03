@@ -1,1 +1,0 @@
-/usr/bin/c++    -std=c++0x -Istdc++ -g -Wall    CMakeFiles/SERVER.dir/server.cpp.o CMakeFiles/SERVER.dir/pvfsapi.c.o CMakeFiles/SERVER.dir/cache_log.cpp.o CMakeFiles/SERVER.dir/cache_alg.cpp.o  -o SERVER  -L/usr/local/pvfs/lib -rdynamic -lpvfs2 -lpthread -lcrypto -lstdc++ -Wl,-rpath,/usr/local/pvfs/lib 

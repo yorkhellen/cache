@@ -1,1 +1,0 @@
-/usr/bin/c++    -std=c++0x -Istdc++ -g -Wall    CMakeFiles/TEST.dir/test.cpp.o CMakeFiles/TEST.dir/pvfsapi.c.o CMakeFiles/TEST.dir/cache_log.cpp.o CMakeFiles/TEST.dir/cache_alg.cpp.o  -o TEST  -L/usr/local/pvfs/lib -rdynamic -lpvfs2 -lpthread -lcrypto -lstdc++ -Wl,-rpath,/usr/local/pvfs/lib 
